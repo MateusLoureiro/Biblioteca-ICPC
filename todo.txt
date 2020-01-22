@@ -1,0 +1,2 @@
+- Testar o código da SegTreeLazy.cpp
+- Separar em pastas
