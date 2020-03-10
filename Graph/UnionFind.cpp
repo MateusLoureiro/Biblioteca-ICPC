@@ -1,9 +1,9 @@
-//src: gap
-// Lembrar de Buildar o disjoint set
+//src: Amigos do Beto
 const int maxn = 1e5; // Checar limites
 
 int ds[maxn], sz[maxn];
 
+// LEMBRAR DE BUILDAR O DSU
 void dsBuild(int n){
 	for(int i = 0; i < n; i++){
 		ds[i] = i;
