@@ -27,7 +27,7 @@ void add(int u, int v, int k) {
   adj[u] = z++;
 }
 
-//Constrói o grafo de levels enquanto o sink é alcançável
+//Constroi o grafo de levels enquanto o sink é alcançável
 int bfs(int source, int sink) {
   memset(level, -1, sizeof level);
   level[source] = 0;

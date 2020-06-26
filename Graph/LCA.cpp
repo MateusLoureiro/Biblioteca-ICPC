@@ -1,4 +1,4 @@
-//src: gabrielpessoa1
+//src: Amigos do Beto
 //mlg = floor(log2(maxn))
 
 const int ms = 1e5 + 10, mlg = log2(ms)+10; // Checar limites
@@ -18,7 +18,7 @@ void dfs(int v, int p, int l = 0) { // Chamar como dfs(root, root)
 
 /*
 // Para grafos com peso, ja pega as distancias até o nó 0
-cont int inf = 1e18; // Checar infinito
+const int inf = 1e18; // Checar infinito
 int dist[ms];
 void dfs(int v, int p, int l = 0, int d = 0) { // chamar como dfs(root, root)
   lvl[v] = l;
