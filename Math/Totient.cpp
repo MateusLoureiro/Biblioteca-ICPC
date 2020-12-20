@@ -1,4 +1,5 @@
 //phi[p] = quantidade de números menores que p que são primos com p
+//pot[i] = menor potencia do primeiro cara
 bool notPrime[maxn];
 int primes[maxn], phi[maxn], pot[maxn], qnt;
 

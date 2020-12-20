@@ -1,92 +1,81 @@
-//O range das queries é de (0, n-1), checar necessidade de decrementar o input
-//Lembrar de buildar a seg
-//Chamada de Merge já vem com os valores, e não com as posições na Seg
+// Range update, range query
 
-const int maxn = 1e5 + 10, inf = 1e9 + 10; //Checar os limites
+int n;
 
-struct no{
-	//Definir no
-	int zeros, ones, twos;
+struct LazyContext{
+	// Atributes
+	bool on;
+	LazyContext(){} // Neutral element of update operation
+	LazyContext(/* Atributos */){} // Initilization
+	void reset(){}  // Reset to neutral element
+	//void set(int x, int y) {}	// If prop depends on the range
+	void operator += (LazyContext lazy) {} // Lazy to lazy prop
 };
 
-vector<int> ent(maxn), lazy(4*maxn);
-vector<no> seg(4*maxn);
+struct Node{
+	// Atributes
+	Node(){} // Neutral element of query operation
+	Node(/* Atributos */){} 	// Initialize
+	Node(Node l, Node r){} // Merge
+	void apply(LazyContext lazy){} // Lazy to seg prop
+};
 
-no merge(no esq, no dir){
-	no ret;
-	//Definir Merge
-	return ret;
-}
 
-void build(int pos, int i, int j){
-	
-	int esq = 2*pos;
-	int dir = esq+1;
-	int mid = (i + j) / 2;
-	
-	lazy[pos] = 0;
-	
-	if(i == j){
-		seg[pos] = {ent[i]}; //Inicializar com valores base ent[i]
-		return;
+template <class Data, class LazyContext = LazyContext, class Node = Node>
+class SegTree{
+private:
+	vector<Data> ent;
+	vector<Node> seg;
+	vector<LazyContext> lazy;
+public:
+	void init(vector<Data> a){
+		ent = a;
+		seg.resize(4*a.size());
+		lazy.resize(4*a.size());
+		build();
 	}
-	build(esq, i, mid);
-	build(dir, mid+1, j);
-	seg[pos] = merge(seg[esq], seg[dir]);
-}
-
-void apply(int pos, int l, int r){
-	if(lazy[pos]){
-		int esq = 2*pos;
-		int dir = esq+1;
-		
-		seg[pos].num = lazy[pos] * (r-l+1); //Definir Propagação da lazy na Seg
-		
-		if(l != r){ //Definir propagação da lazy na lazy
-			lazy[esq] += lazy[pos];
-			lazy[dir] += lazy[pos];
+	
+	void build(int pos = 0, int i = 0, int j = n-1){
+		int esq = pos+pos+1, dir = pos+pos+2, mid = (i+j)>>1;
+		//lazy[pos].set(i, j); // If prop depends on range
+		if(i == j){
+			seg[pos] = Node(ent[i]);
+			return;
 		}
-		lazy[pos] = 0;
+		build(esq, i, mid); build(dir, mid+1, j);
+		seg[pos] = Node(seg[esq], seg[dir]);
 	}
-	
-}
 
-no query(int pos, int i, int j, int l, int r){
-	
-	int esq = 2*pos;
-	int dir = esq+1;
-	int mid = (i+j)/2;
-	
-	apply(pos, i, j);
-	
-	if(r < i || l > j){
-		return {0, 0, 0}; //Valor que não atrapalhe
+	void apply(int pos, int l, int r){
+		if(lazy[pos].on){
+			int esq = pos+pos+1, dir = pos+pos+2;
+			seg[pos].apply(lazy[pos]);
+			if(l != r){
+				lazy[esq] += lazy[pos];
+				lazy[dir] += lazy[pos];
+			}
+			lazy[pos].reset();
+		}
 	}
-	if(j <= r && i >= l){
-		return seg[pos];
-	}
-	
-	return merge(query(esq, i, mid, l, r), query(dir, mid+1, j, l, r));
-}
 
-void update(int pos, int i, int j, int l, int r, int val){
-	
-	int esq = 2*pos;
-	int dir = esq+1;
-	int mid = (i+j)/2;
-	
-	apply(pos, i, j);
-	
-	if(r < i || l > j){
-		return;
-	}
-	if(j <= r && i >= l){
-		lazy[pos] = val;
+	void upd(int l, int r, LazyContext val, int pos = 0, int i = 0, int j = n-1){
+		int esq = pos+pos+1, dir = pos+pos+2, mid = (i+j)>>1;
 		apply(pos, i, j);
-		return;
+		if(j < l || i > r)	return;
+		if(l <= i && r >= j){
+			lazy[pos] += val;
+			apply(pos, i, j);
+			return;
+		}
+		upd(l, r, val, esq, i, mid); upd(l, r, val, dir, mid+1, j);
+		seg[pos] = Node(seg[esq], seg[dir]);
 	}
-	
-	update(esq, i, mid, l, r, val); 
-	update(dir, mid+1, j, l, r, val);
-	seg[pos] = merge(seg[esq], seg[dir]);
-}
+
+	Node qry(int l, int r, int pos = 0, int i = 0, int j = n-1){
+		int esq = pos+pos+1, dir = pos+pos+2, mid = (i+j)>>1;
+		apply(pos, i, j);
+		if(j < l || i > r)	return Node();
+		if(l <= i && r >= j)	return seg[pos];
+		return Node(qry(l, r, esq, i, mid), qry(l, r, dir, mid+1, j));
+	}
+};

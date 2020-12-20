@@ -1,68 +1,52 @@
-//O range das queries é de (0, n-1), checar necessidade de decrementar o input
-//Lembrar de buildar a seg
-//Chamada de Merge já vem com os valores, e não com as posições na Seg
+// Point update, range query
 
-const int maxn = 1e5 + 10, inf = 1e9 + 10; //Checar os limites
+int n;
 
-struct no{
-	//Definir no
-	int val;
+struct Node{
+	// Atributos
+	Node(){} // Elemento neutro	
+	Node(/* Atributos */){} 	// Initialize
+	Node(Node l, Node r){} // Merge
 };
 
-vector<int> ent(maxn);
-vector<no> seg(4*maxn);
-
-no merge(no esq, no dir){
-	no ret;
-	//Definir Merge
-	ret.val = esq.val * dir.val;
-	return ret;
-}
-
-void build(int pos, int i, int j){
-	
-	int esq = 2*pos;
-	int dir = esq+1;
-	int mid = (i + j) / 2;
-	
-	if(i == j){
-		seg[pos] = {ent[i]}; //Inicializar com valores base ent[i]
-		return;
-	}
-	build(esq, i, mid);
-	build(dir, mid+1, j);
-	seg[pos] = merge(seg[esq], seg[dir]);
-}
-
-void update(int pos, int i, int j, int x, int val){
-	
-	int esq = 2*pos;
-	int dir = esq+1;
-	int mid = (i + j) / 2;
-	
-	if(i == j){
-		seg[pos] = {val}; //Inicializar com valores base val
-		return;
-	}
-	if(x <= mid)
-		update(esq, i, mid, x, val);
-	else
-		update(dir, mid+1, j, x, val);
-	seg[pos] = merge(seg[esq], seg[dir]);
-}	
-
-no query(int pos, int i, int j, int l, int r){
-	
-	int esq = 2*pos;
-	int dir = esq+1;
-	int mid = (i+j)/2;
-	
-	if(r < i || l > j){
-		return {1}; //Valor que não atrapalhe
-	}
-	if(j <= r && i >= l){
-		return seg[pos];
+template <class Data, class Node = Node>
+class SegTree {
+private:
+	vector<Data> ent;
+	vector<Node> seg;
+public:
+	void init(vector<Data> a){
+		ent = a;
+		seg.resize(4*a.size());
+		build();
 	}
 	
-	return merge(query(esq, i, mid, l, r), query(dir, mid+1, j, l, r));
-}
+	void build(int pos = 0, int i = 0, int j = n-1){
+		int esq = pos+pos+1, dir = pos+pos+2, mid = (i+j)>>1;
+		if(i == j){
+			seg[pos] = Node(ent[i]);
+			return;
+		}
+		build(esq, i, mid);	build(dir, mid+1, j);
+		seg[pos] = Node(seg[esq], seg[dir]);
+	}
+	
+	void upd(int ind, Data val, int pos = 0, int i = 0, int j = n-1){
+		int esq = pos+pos+1, dir = pos+pos+2, mid = (i+j)>>1;
+		if(i == j){
+			ent[ind] = val;
+			seg[pos] = Node(val);
+			return;
+		}
+		if(ind <= mid)	upd(ind, val, esq, i, mid);
+		else	upd(ind, val, dir, mid+1, j);
+		seg[pos] = Node(seg[esq], seg[dir]);
+	}
+	
+	Node qry(int l, int r, int pos = 0, int i = 0, int j = n-1){
+		int esq = pos+pos+1, dir = pos+pos+2, mid = (i+j)>>1;
+		if(j < l || i > r)	return Node();
+		if(l <= i && r >= j)	return seg[pos];
+		return Node(qry(l, r, esq, i, mid), qry(l, r, dir, mid+1, j));
+	}
+};	
