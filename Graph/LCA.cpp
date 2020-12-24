@@ -1,8 +1,7 @@
 //src: Amigos do Beto
-//mlg = floor(log2(maxn))
 
 const int ms = 1e5 + 10, mlg = log2(ms)+10; // Checar limites
-int par[ms][mlg+1], lvl[ms];
+int par[ms][mlg+1], lvl[ms]; //mlg = floor(log2(maxn))
 vector<int> adj[ms]; // Modificar para grafos com peso
 
 void dfs(int v, int p, int l = 0) { // Chamar como dfs(root, root)
@@ -11,30 +10,10 @@ void dfs(int v, int p, int l = 0) { // Chamar como dfs(root, root)
   for(int k = 1; k <= mlg; k++) {
     par[v][k] = par[par[v][k-1]][k-1];
   }
-  for(int u : adj[v]) { // Modificar para grafos com peso
+  for(int u : adj[v]) { 
     if(u != p) dfs(u, v, l + 1);
   }
 }
-
-/*
-// Para grafos com peso, ja pega as distancias até o nó 0
-const int inf = 1e18; // Checar infinito
-int dist[ms];
-void dfs(int v, int p, int l = 0, int d = 0) { // chamar como dfs(root, root)
-  lvl[v] = l;
-  dist[v] = d;
-  par[v][0] = p;
-  for(int k = 1; k <= mlg; k++) {
-    par[v][k] = par[par[v][k-1]][k-1];
-  }
-  int u;
-  for(ii it : adj[v]) { //Modificar para grafos com peso
-    u = it.first;
-    if(u != p) 
-			dfs(u, v, l + 1, d + it.second);
-  }
-}
-*/
 
 int lca(int a, int b) {
   if(lvl[b] > lvl[a]) swap(a, b);
