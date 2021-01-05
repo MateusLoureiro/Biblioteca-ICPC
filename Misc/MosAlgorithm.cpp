@@ -23,7 +23,7 @@ const int blockSize = (int)sqrt(n) + 1; // Customize based on problem
 struct Query {
 	int l, r, idx;
 	bool operator < (Query o) const {
-		if(l / blockSize != other.l / blockSize)
+		if(l / blockSize != o.l / blockSize)
 			return l < o.l;
 		return (l / blockSize & 1) ? (r < o.r) : (r > o.r);
 	}
