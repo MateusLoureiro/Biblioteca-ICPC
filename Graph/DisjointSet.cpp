@@ -1,6 +1,3 @@
-//src: Amigos do Beto
-const int maxn = 1e5; // Checar limites
-
 int ds[maxn], sz[maxn];
 
 // LEMBRAR DE BUILDAR O DSU
