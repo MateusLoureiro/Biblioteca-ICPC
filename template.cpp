@@ -27,6 +27,8 @@ int32_t main(){
 /*
 Fast
 g++ -std=c++17 -Wshadow -Wall -O2 -Wno-unused-result
+g++-11 -std=c++17 -Wshadow -Wall -O2 -Wno-unused-result
 Debug
 g++ -std=c++17 -Wshadow -Wall -g -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG
+g++-11 -std=c++17 -Wshadow -Wall -g -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG
 */
